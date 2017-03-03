@@ -5,6 +5,7 @@ import DeckGL, {ScatterplotLayer} from 'deck.gl';
 
 import WindLayer from './wind-layer/wind-layer';
 import DelaunayCoverLayer from './wind-layer/delaunay-cover-layer';
+import ElevationLayer from './wind-layer/elevation-layer';
 import ParticleLayer from './wind-layer/particle-layer';
 import {loadData} from './utils/load-data';
 
@@ -80,9 +81,12 @@ export default class WindDemo extends Component {
         texData,
         time: params.time
       }),
-      params.toggleElevation && new DelaunayCoverLayer({
+      params.toggleElevation && new ElevationLayer({
         id: 'delaunay-cover',
-        triangulation
+        bbox,
+        lngResolution: 400,
+        latResolution: 150,
+        zScale: 50
       })
     ].filter(Boolean);
 
