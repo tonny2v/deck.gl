@@ -4,9 +4,7 @@ import {GL, Model, Geometry, Texture2D, loadTextures} from 'luma.gl';
 import vertex from './elevation-vertex';
 import fragment from './elevation-fragment';
 
-const ELEVATION_DATA_IMAGE = './data/elevation.png';
-const ELEVATION_DATA_BOUNDS = [-125, 24.4, -66.7, 49.6];
-const ELEVATION_RANGE = [-100, 4126];
+import {ELEVATION_DATA_IMAGE, ELEVATION_DATA_BOUNDS, ELEVATION_RANGE} from '../defaults';
 
 export default class ElevationLayer extends Layer {
 
@@ -89,7 +87,8 @@ export default class ElevationLayer extends Layer {
       vs: vsShader,
       fs: fsShader,
       geometry: new Geometry({
-        drawMode: GL.TRIANGLES
+        // drawMode: GL.TRIANGLES
+        drawMode: GL.LINE_STRIP
       }),
       vertexCount: 0,
       isIndexed: true,
@@ -99,6 +98,7 @@ export default class ElevationLayer extends Layer {
         gl.depthFunc(gl.LEQUAL);
 
         gl.enable(gl.BLEND);
+        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.blendEquation(gl.FUNC_ADD);
       },

@@ -66,7 +66,7 @@ export default class WindLayer extends Layer {
     for (let i = 0; i < nx; ++i) {
       for (let j = 0; j < ny; ++j) {
         let index = (i + j * nx) * 3;
-        positions[index + 0] = i * spanX + bbox.minLng;
+        positions[index + 0] = i * spanX + bbox.minLng + ((j % 2)? spanX / 2 : 0);
         positions[index + 1] = j * spanY + bbox.minLat;
         positions[index + 2] = 0;
       }

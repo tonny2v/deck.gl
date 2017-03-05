@@ -27,7 +27,7 @@ export default `
 #define HEIGHT_FACTOR 25.
 #define EPSILON 0.01
 #define DELTA 5.
-#define FACTOR .05
+#define FACTOR .015
 
 uniform sampler2D dataFrom;
 uniform sampler2D dataTo;
@@ -78,7 +78,7 @@ void main(void) {
     wind = wind * FACTOR + windPast * (1. - FACTOR);
   }
 
-  vec2 offset = vec2(cos(angle), sin(angle)) * wind * 0.2;
+  vec2 offset = vec2(cos(angle), sin(angle)) * wind * 0.3;
   vec2 offsetPos = posFrom.xy + offset;
 
   vec4 endPos = vec4(offsetPos, mod(angle, PI * 2.), wind);

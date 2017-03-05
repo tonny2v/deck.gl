@@ -8,6 +8,7 @@ import DelaunayCoverLayer from './wind-layer/delaunay-cover-layer';
 import ElevationLayer from './wind-layer/elevation-layer';
 import ParticleLayer from './wind-layer/particle-layer';
 import {loadData} from './utils/load-data';
+import {MARGIN, SAMPLE} from './defaults';
 
 import TWEEN from 'tween.js';
 
@@ -60,10 +61,12 @@ export default class WindDemo extends Component {
 
     const {stations, weather, triangulation, texData, bbox} = data;
 
+    const newStations = stations.slice(0, -SAMPLE);
+
     const layers = [
       new ScatterplotLayer({
         id: 'stations',
-        data: stations,
+        data: newStations,
         getPosition: d => [-d.long, d.lat, +d.elv],
         getColor: d => [200, 200, 100],
         getRadius: d => 150,
@@ -71,22 +74,23 @@ export default class WindDemo extends Component {
       }),
       params.toggleParticles && new ParticleLayer({
         id: 'particles',
-        bbox,
+        bbox: bbox,
         texData,
         time: params.time
       }),
       params.toggleWind && new WindLayer({
         id: 'wind',
-        bbox,
+        bbox: bbox,
         texData,
         time: params.time
       }),
       params.toggleElevation && new ElevationLayer({
         id: 'delaunay-cover',
         bbox,
-        lngResolution: 400,
-        latResolution: 150,
-        zScale: 50
+        triangulation,
+        lngResolution: 100,
+        latResolution: 50,
+        zScale: 200
       })
     ].filter(Boolean);
 

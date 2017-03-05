@@ -27,15 +27,15 @@ void main() {
   vAltitude = curr.z / zScale;
   curr = project_position(curr);
 
-  vec3 prev = getWorldPosition(positions - vec2(0.1, 0.0));
+  vec3 prev = getWorldPosition(positions + vec2(1., 0.0));
   prev = project_position(prev);
-  vec3 next = getWorldPosition(positions + vec2(0.0, 0.1));
+  vec3 next = getWorldPosition(positions - vec2(0.0, 1.));
   next = project_position(next);
 
   vec4 position_worldspace = vec4(curr, 1.0);
   gl_Position = project_to_clipspace(position_worldspace);
 
   vPosition = position_worldspace;
-  vNormal = normalize(cross(prev-curr, next-curr));
+  vNormal = cross(prev-curr, next-curr);
 }
 `;

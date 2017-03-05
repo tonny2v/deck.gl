@@ -36,8 +36,8 @@ class Root extends Component {
       },
       params: {
         time: 11.4,
-        toggleParticles: true,
-        toggleWind: false,
+        toggleParticles: false,
+        toggleWind: true,
         toggleElevation: true
       }
     };
