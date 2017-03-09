@@ -30,6 +30,7 @@ precision highp float;
 varying vec4 vPosition;
 varying vec4 vNormal;
 varying vec4 vColor;
+varying float vAltitude;
 
 uniform vec3 cameraPos;
 uniform vec3 lightsPosition;
@@ -333,6 +334,9 @@ float getLightWeight(vec4 position_worldspace, vec3 normals_worldspace) {
 
 void main(void) {
   if (vColor.a == 0.) {
+    discard;
+  }
+  if (vAltitude < -90.) {
     discard;
   }
   float lightWeight = getLightWeight(vPosition, vNormal.xyz);

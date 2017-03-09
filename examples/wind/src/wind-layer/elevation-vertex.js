@@ -32,6 +32,8 @@ void main() {
   vec3 next = getWorldPosition(positions - vec2(0.0, 1.));
   next = project_position(next);
 
+  curr.z = (curr.z + prev.z + next.z) / 3.;
+
   vec4 position_worldspace = vec4(curr, 1.0);
   gl_Position = project_to_clipspace(position_worldspace);
 

@@ -25,7 +25,7 @@ export default `
 #define PI2 1.5707963267949
 #define PI4 0.78539816339745
 #define HEIGHT_FACTOR 25.
-#define EPSILON 0.01
+#define EPSILON 0.013
 #define DELTA 5.
 #define FACTOR .015
 
@@ -36,6 +36,7 @@ uniform float time;
 
 uniform float flip;
 uniform vec4 bbox;
+uniform vec4 originalBBox;
 uniform vec2 bounds0;
 uniform vec2 bounds1;
 uniform vec2 bounds2;
@@ -72,13 +73,13 @@ void main(void) {
   }
 
   // wind speed
-  float wind = 0.05 + 0.9 * (texel.y - bounds1.x) / (bounds1.y - bounds1.x);
+  float wind = 0.05 + 0.95 * (texel.y - bounds1.x) / (bounds1.y - bounds1.x);
   float windPast = posFrom.w;
   if (windPast > -1.) {
     wind = wind * FACTOR + windPast * (1. - FACTOR);
   }
 
-  vec2 offset = vec2(cos(angle), sin(angle)) * wind * 0.3;
+  vec2 offset = vec2(cos(angle), sin(angle)) * (wind * 0.2 + 0.002);
   vec2 offsetPos = posFrom.xy + offset;
 
   vec4 endPos = vec4(offsetPos, mod(angle, PI * 2.), wind);
@@ -86,8 +87,8 @@ void main(void) {
   // if out of bounds then map to random position
   float r1 = rand(vec2(posFrom.x, offset.x + time));
   float r2 = rand(vec2(posFrom.y, offset.y + time));
-  r1 = r1 * (bbox.y - bbox.x) + bbox.x;
-  r2 = r2 * (bbox.w - bbox.z) + bbox.z;
+  r1 = r1 * (originalBBox.y - originalBBox.x) + originalBBox.x;
+  r2 = r2 * (originalBBox.w - originalBBox.z) + originalBBox.z;
   vec2 randValues = vec2(r1, r2);
 
   // endPos = vec4(offsetPos, randValues);

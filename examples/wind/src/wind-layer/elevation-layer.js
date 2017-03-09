@@ -87,8 +87,8 @@ export default class ElevationLayer extends Layer {
       vs: vsShader,
       fs: fsShader,
       geometry: new Geometry({
-        // drawMode: GL.TRIANGLES
-        drawMode: GL.LINE_STRIP
+        drawMode: GL.TRIANGLES
+        // drawMode: GL.LINE_STRIP
       }),
       vertexCount: 0,
       isIndexed: true,

@@ -25,8 +25,8 @@ export default class ParticleLayer extends Layer {
   initializeState() {
     const {gl} = this.context;
     const {attributeManager} = this.state;
-    const {bbox, texData} = this.props;
-    const {model, modelTF} = this.getModel(gl, bbox, 1200, 600, texData);
+    const {bbox, texData, originalBBox} = this.props;
+    const {model, modelTF} = this.getModel(gl, bbox, originalBBox, 1200, 600, texData);
     const data = {};
 
     const image = new Image(584, 253);
@@ -50,21 +50,27 @@ export default class ParticleLayer extends Layer {
   }
 
   createTexture(gl, opt) {
+    let options = {
+      data: {
+        format: gl.RGBA,
+        value: false,
+        type: opt.type || gl.FLOAT,
+        internalFormat: opt.internalFormat || gl.RGBA32F,
+        width: opt.width,
+        height: opt.height,
+        border: 0
+      }
+    };
+
+    if (opt.parameters) {
+      options.parameters = opt.parameters;
+    }
+
     return new DelaunayInterpolation({gl})
-      .createTexture(gl, {
-          data: {
-            format: gl.RGBA,
-            value: false,
-            type: opt.type || gl.FLOAT,
-            internalFormat: opt.internalFormat || gl.RGBA32F,
-            width: opt.width,
-            height: opt.height,
-            border: 0
-          }
-        });
+      .createTexture(gl, options);
   }
 
-  getModel(gl, bbox, nx, ny, texData) {
+  getModel(gl, bbox, originalBBox, nx, ny, texData) {
     // This will be a grid of elements
     let {dataBounds, textureArray, textureSize} = texData,
         {width, height} = textureSize,
@@ -76,7 +82,20 @@ export default class ParticleLayer extends Layer {
           width: elevationWidth,
           height: elevationHeight,
           type: gl.RGBA,
-          internalFormat: gl.RGBA
+          internalFormat: gl.RGBA,
+          parameters: [{
+            name: gl.TEXTURE_MAG_FILTER,
+            value: gl.LINEAR
+          }, {
+            name: gl.TEXTURE_MIN_FILTER,
+            value: gl.LINEAR
+          }, {
+            name: gl.TEXTURE_WRAP_S,
+            value: gl.CLAMP_TO_EDGE
+          }, {
+            name: gl.TEXTURE_WRAP_T,
+            value: gl.CLAMP_TO_EDGE
+          }]
         }),
         diffX = bbox.maxLng - bbox.minLng,
         diffY = bbox.maxLat - bbox.minLat,
@@ -91,8 +110,7 @@ export default class ParticleLayer extends Layer {
         timeInt = 0,
         delta = 0,
         state = this.state,
-        randLng = () => (bbox.maxLng - bbox.minLng) * Math.random() + bbox.minLng,
-        randLat = () => (bbox.maxLat - bbox.minLat) * Math.random() + bbox.minLat;
+        props = this.props;
 
     this.state.numInstances = dim;
 
@@ -147,7 +165,7 @@ export default class ParticleLayer extends Layer {
         let time = Date.now() - now;
         let flip = time > 500 ? 1 : -1;
         if (flip > 0) {
-          // counter = (counter + 1) % nx;
+          //counter = (counter + 1) % nx;
           counter = (counter + 1) % 10;
           flip = counter;
           // console.log(flip);
@@ -155,6 +173,7 @@ export default class ParticleLayer extends Layer {
         // set uniforms
         modelTF.program.setUniforms({
           bbox: [bbox.minLng, bbox.maxLng, bbox.minLat, bbox.maxLat],
+          originalBBox: [originalBBox.minLng, originalBBox.maxLng, originalBBox.minLat, originalBBox.maxLat],
           bounds0: [dataBounds[0].min, dataBounds[0].max],
           bounds1: [dataBounds[1].min, dataBounds[1].max],
           bounds2: [dataBounds[2].min, dataBounds[2].max],
@@ -240,11 +259,12 @@ export default class ParticleLayer extends Layer {
           dataTo: 1,
           elevationTexture: 2,
           elevationBounds: ELEVATION_DATA_BOUNDS,
-          elevationRange: ELEVATION_RANGE
+          elevationRange: ELEVATION_RANGE,
+          zScale: props.zScale
         });
         gl.enable(gl.BLEND);
-        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         // gl.blendEquation(gl.MAX);
 
         // upload texture (data) before rendering
@@ -265,11 +285,6 @@ export default class ParticleLayer extends Layer {
           gl.activeTexture(gl.TEXTURE2);
           gl.bindTexture(gl.TEXTURE_2D, elevationTexture);
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, elevationWidth, elevationHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, state.data.img);
-          // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, state.data.img);
-          // gl.bindTexture(gl.TEXTURE_2D, null);
-          // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.FLOAT, textureArray[(model.props && model.props.timeInt || timeInt) + 1], 0);
-          // console.log('bind');
-          // state.data.texture.bind(2);
         }
 
         let loc = model.program._attributeLocations['posFrom'];

@@ -62,6 +62,12 @@ export default class WindDemo extends Component {
     const {stations, weather, triangulation, texData, bbox} = data;
 
     const newStations = stations.slice(0, -SAMPLE);
+    const newBBox = {
+      minLng: bbox.minLng + MARGIN,
+      maxLng: bbox.maxLng - MARGIN,
+      minLat: bbox.minLat + MARGIN,
+      maxLat: bbox.maxLat - MARGIN
+    };
 
     const layers = [
       new ScatterplotLayer({
@@ -75,12 +81,15 @@ export default class WindDemo extends Component {
       params.toggleParticles && new ParticleLayer({
         id: 'particles',
         bbox: bbox,
+        originalBBox: newBBox,
         texData,
-        time: params.time
+        time: params.time,
+        zScale: 100
       }),
       params.toggleWind && new WindLayer({
         id: 'wind',
-        bbox: bbox,
+        bbox,
+        originalBBox: newBBox,
         texData,
         time: params.time
       }),
@@ -88,9 +97,9 @@ export default class WindDemo extends Component {
         id: 'delaunay-cover',
         bbox,
         triangulation,
-        lngResolution: 100,
-        latResolution: 50,
-        zScale: 200
+        lngResolution: 200,
+        latResolution: 100,
+        zScale: 100
       })
     ].filter(Boolean);
 

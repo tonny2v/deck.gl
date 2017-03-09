@@ -27,7 +27,8 @@ class Root extends Component {
         bearing:0.9642857142857792,
         latitude:37.59651729201781,
         longitude:-96.86543413846587,
-        mapStyle: "mapbox://styles/uberdata/cive485h000192imn6c6cc8fc",
+        //mapStyle: "mapbox://styles/uberdata/cive485h000192imn6c6cc8fc",
+        mapStyle: "mapbox://styles/mapbox/dark-v9",
         maxZoom:8,
         pitch:34.095940959409596,
         zoom:4.223615382460847,
@@ -35,9 +36,10 @@ class Root extends Component {
         height: 500
       },
       params: {
-        time: 11.4,
-        toggleParticles: false,
-        toggleWind: true,
+        // time: 11.4,
+        time: 0,
+        toggleParticles: true,
+        toggleWind: false,
         toggleElevation: true
       }
     };
